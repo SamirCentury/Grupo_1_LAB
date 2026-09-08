@@ -35,7 +35,8 @@ SubProceso JugarPoker
 	Definir maq_valores, maq_palo Como Entero
 	Dimension maq_valores[5], maq_palo[5]
 
-	Definir puntaje_j1, puntaje_maq, i, cambiar, pos, seguir como Entero
+	Definir puntaje_j1, puntaje_maq, i, cambiar, pos, seguir,j, cand_val, cand_palo como Entero
+	definir es_repetido Como Logico
 	
 	Repetir
 		
@@ -45,7 +46,7 @@ SubProceso JugarPoker
 		
 		RepartirMano(maq_valores, maq_palo)
 		OrdenarMano(maq_valores, maq_palo)
-	
+		
 		//Mostrar la mano del jugador
 		Escribir "TU MANO INICIAL:"
 		Para i=0 Hasta 4 Con Paso 1 Hacer
@@ -60,6 +61,7 @@ SubProceso JugarPoker
 		MostrarNombreJugada(puntaje_j1)
 		Escribir ""
 		Escribir ""
+		
 		//Posibilidad de cambiar de cartas para el jugador
 		Escribir "¿Cuantas cartas quiere cambiar? (0 a 5)"
 		leer cambiar
@@ -67,74 +69,97 @@ SubProceso JugarPoker
 			Para i=0 Hasta cambiar-1 Con Paso 1 Hacer
 				Escribir "Ingresá la posición que quiere cambiar (1 a 5)"
 				leer pos
-				j1_valores[pos-1] <- Aleatorio(2,14)
-				j1_palo[pos-1] <- Aleatorio(1,4)
+				
+				Repetir 
+					cand_val <- Aleatorio(2,14)
+					cand_palo <- Aleatorio(1,4)
+					es_repetido <- falso
+					
+					//verificamos contras todas las posiciones de la mano actual
+					Para j=0 hasta 4 con paso 1 Hacer
+						//ignoramos la posición que estamos cambiando
+						Si j <> (pos-1) Entonces
+							si j1_valores[j] = cand_val y j1_palo[j] = cand_palo Entonces
+								es_repetido <- verdadero
+							FinSi
+						FinSi
+					FinPara
+				mientras que es_repetido = Verdadero
+				
+				//asignamos
+				j1_valores[pos-1] <- cand_val
+				j1_palo[pos-1] <- cand_palo
 			Fin Para
+			
 			//Reordenamos la mano tras el cambio
 			OrdenarMano(j1_valores, j1_palo)
 			Escribir ""
-		Escribir "TU MANO: "
-		Para i=0 Hasta 4 Con Paso 1 Hacer
-			Escribir "Carta ",i+1,": " Sin Saltar
-			MostrarCarta(j1_palo[i],j1_valores[i])
-			Escribir ""
-		Fin Para
-			puntaje_j1 <- EvaluarMano(j1_valores, j1_palo)
-			Escribir "Tu mano final es: " sin saltar
-			MostrarNombreJugada(puntaje_j1)
-			Escribir ""
-		SiNo
-			Escribir "Decidiste conservar tu mano inicial"
-		FinSi
-		//Fase de descarte de la maquina
-		Escribir ""
-		Escribir "==========================================="
-		Escribir "Turno de la maquina para cambiar de cartas..."
-		Escribir ""
-		DescarteMaquina(maq_valores, maq_palo)
-		Escribir "==========================================="
-		Escribir ""
-		
-		Escribir "Presione ENTER para revelar las manos y  ver los resultados..."
-		esperar tecla
-		//Revelacion y evaluacion final
-		Escribir ""
-		Escribir "MANO DE LA MAQUINA:"
-		Para i=0 Hasta 4 Con Paso 1 Hacer
-			Escribir "Carta ",i+1,": " Sin Saltar
-			MostrarCarta(maq_palo[i],maq_valores[i])
-			Escribir ""
-		Fin Para
-		puntaje_maq <- EvaluarMano(maq_valores, maq_palo)
-		Escribir "La maquina tiene: " sin saltar
-		MostrarNombreJugada(puntaje_maq)
-		Escribir ""
-		Escribir ""
-		Escribir "======================================="
-		
-		//Definicion del Ganador 
-		Si  puntaje_j1 > puntaje_maq Entonces
-			Escribir "¡FELICITACIONES! Ganaste la partida."
-		SiNo
-			Si puntaje_maq > puntaje_j1 Entonces
-				Escribir "Gana la Máquina. ¡Suerte para la próxima!"
-			Sino 
-				Escribir "¡Empate técnico en la partida!"
+			Escribir "TU MANO: "
+			
+			Para i=0 Hasta 4 Con Paso 1 Hacer
+				Escribir "Carta ",i+1,": " Sin Saltar
+				MostrarCarta(j1_palo[i],j1_valores[i])
+				Escribir ""
+			Fin Para
+				puntaje_j1 <- EvaluarMano(j1_valores, j1_palo)
+				Escribir "Tu mano final es: " sin saltar
+				MostrarNombreJugada(puntaje_j1)
+				Escribir ""
+			SiNo
+				Escribir "Decidiste conservar tu mano inicial"
 			FinSi
-		FinSi
-		
-	//Preguntar al usuario si quiere seguir jugando
-		Repetir
+			
+			//Fase de descarte de la maquina
 			Escribir ""
-			Escribir "¿Quieres jugar otra mano?"
-			Escribir "1. Si"
-			Escribir "0. No"
-			leer seguir
-		
-			si seguir <> 1 y seguir <> 0 Entonces
-				Escribir "Opción no valida. Por favor, ingresá 1 o 0"
+			Escribir "==========================================="
+			Escribir "Turno de la maquina para cambiar de cartas..."
+			Escribir ""
+			DescarteMaquina(maq_valores, maq_palo)
+			Escribir "==========================================="
+			Escribir ""
+			
+			Escribir "Presione ENTER para revelar las manos y  ver los resultados..."
+			esperar tecla
+			
+			//Revelacion y evaluacion final
+			Escribir ""
+			Escribir "MANO DE LA MAQUINA:"
+			Para i=0 Hasta 4 Con Paso 1 Hacer
+				Escribir "Carta ",i+1,": " Sin Saltar
+				MostrarCarta(maq_palo[i],maq_valores[i])
+				Escribir ""
+			Fin Para
+			
+			puntaje_maq <- EvaluarMano(maq_valores, maq_palo)
+			Escribir "La maquina tiene: " sin saltar
+			MostrarNombreJugada(puntaje_maq)
+			Escribir ""
+			Escribir ""
+			Escribir "======================================="
+			
+			//Definicion del Ganador 
+			Si  puntaje_j1 > puntaje_maq Entonces
+				Escribir "¡FELICITACIONES! Ganaste la partida."
+			SiNo
+				Si puntaje_maq > puntaje_j1 Entonces
+					Escribir "Gana la Máquina. ¡Suerte para la próxima!"
+				Sino 
+					Escribir "¡Empate técnico en la partida!"
+				FinSi
 			FinSi
-		Mientras Que seguir <> 1 y seguir <> 0
+			
+		//Preguntar al usuario si quiere seguir jugando
+			Repetir
+				Escribir ""
+				Escribir "¿Quieres jugar otra mano?"
+				Escribir "1. Si"
+				Escribir "0. No"
+				leer seguir
+				
+				si seguir <> 1 y seguir <> 0 Entonces
+					Escribir "Opción no valida. Por favor, ingresá 1 o 0"
+				FinSi
+			Mientras Que seguir <> 1 y seguir <> 0
 	Mientras Que seguir = 1
 
 
@@ -170,7 +195,7 @@ SubProceso MostrarCarta(num_palo,num_valor)
 FinSubProceso
 
 //Este subproceso reparte 5 cartas unicas sin repetir 
-SubProceso RepartirMano(Mano_valores, mano_palo)
+SubProceso RepartirMano(Mano_valores Por Referencia, mano_palo Por Referencia)
 	definir i,j como entero
 	definir candidato_valor, candidato_palo Como Entero
 	definir es_repetido Como Logico
@@ -179,6 +204,9 @@ SubProceso RepartirMano(Mano_valores, mano_palo)
 		Repetir
 			candidato_valor <- Aleatorio(2,14)
 			candidato_palo <- Aleatorio(1,4)
+			
+			//Asumimos que la carta no está repetida antes de revisar
+			es_repetido <- falso
 			
 			//revisamos si hay duplicados con las cartas anteriores
 			Para j=0 Hasta i-1 Con Paso 1 Hacer
@@ -191,6 +219,7 @@ SubProceso RepartirMano(Mano_valores, mano_palo)
 		//Al salir del bucle guardamos en la posicion i
 		mano_valores[i] <- candidato_valor
 		mano_palo[i] <- candidato_palo
+		
 	Fin Para
 	
 FinSubProceso
@@ -221,7 +250,7 @@ FinSubProceso
 
 Funcion puntaje <- EvaluarMano(mano_valores, mano_palo)
 	Definir puntaje como entero
-	Definir esColor, esEscalera como logico
+	Definir esColor, esEscalera, esEscaleraReal como logico
 	Definir i, pares, trios, poker Como Entero
 	
 	//1. Verificación de Color (todos los palos iguales)
@@ -240,59 +269,73 @@ Funcion puntaje <- EvaluarMano(mano_valores, mano_palo)
 		FinSi
 	Fin Para
 	
-	//3. Conteo de repeticiones de valores
-	pares <- 0
-	trios <- 0
-	poker <- 0
+	//3. Verificación de Escalera Real
+	esEscaleraReal <- Falso
+	Si esEscalera y mano_valores[1]=10 y mano_valores[4]=14 Entonces
+		esEscaleraReal <- verdadero
+	FinSi
+	
 	
 	//Evaluamos las cartas iguales agrupadas
 	Si (mano_valores[0] = mano_valores[3]) o (mano_valores[1] = mano_valores[4]) Entonces
 		poker <- 1
-	Sino 
-		//Verificamos trios posibles en un vector ordenado de 5 elementos 
-		Si (mano_valores[0] = mano_valores[2]) o (mano_valores[1] = mano_valores[3]) o (mano_valores[2] = mano_valores[4]) Entonces
-			trios <- 1
-		FinSi
-		
-		//Verificamos cantidad de pares
-		Para i=0 Hasta 3 Con Paso 1 Hacer
-			Si mano_valores[i] = mano_valores[i+1] Entonces
-				pares <- pares + 1
-			FinSi
-		Fin Para
-		
-		//Ajuste: si hay un trio, el bucle anterior cuenta 2 pares consecutivos 
-		Si trios = 1 Entonces
-			pares <- pares - 2
-		FinSi
 	FinSi
 	
+	//Verificamos trios
+	Si (mano_valores[0] = mano_valores[2]) o (mano_valores[1] = mano_valores[3]) o (mano_valores[2] = mano_valores[4]) Entonces
+		trios <- 1
+	FinSi
+	
+	
+	//Verificamos cantidad de pares (En todas las cartas de la mano)
+	Para i=0 Hasta 3 Con Paso 1 Hacer
+		Si mano_valores[i] = mano_valores[i+1] Entonces
+			pares <- pares + 1
+		FinSi
+	Fin Para
+	
+	
+	//Ajustes 
+	Si poker = 1 Entonces
+		pares <- 0 //si hay poker, no se restan pares
+		trios <- 0
+	SiNo 
+		Si trios = 1 Entonces
+			pares <- pares - 2 //se restan los 2 pares falsos generados por el trio
+		Finsi
+	FinSi
+	
+	
 	//4. Determinación del puntaje final
-	Si esEscalera y esColor Entonces
-		puntaje <- 9 //Escalera de color
+	Si esEscaleraReal Entonces
+		puntaje <- 10 //Escalera Real
 	SiNo
-		Si poker = 1 Entonces
-			puntaje <- 8 //Poker (4 cartas iguales)
+		Si esEscalera y esColor Entonces
+			puntaje <- 9 //Escalera de color
 		SiNo
-			Si trios = 1 y pares = 1 Entonces
-				puntaje <- 7 //Full House (trio + par)
+			Si poker = 1 Entonces
+				puntaje <- 8 //Poker (4 cartas iguales)
 			SiNo
-				Si esColor Entonces
-					puntaje <- 6 //Color
+				Si trios = 1 y pares = 1 Entonces
+					puntaje <- 7 //Full House (trio + par)
 				SiNo
-					Si esEscalera Entonces
-						puntaje <- 5 //Escalera
-					Sino 
-						Si trios = 1 Entonces
-							puntaje <- 4 //trios
-						SiNo
-							Si pares = 2 Entonces
-								puntaje <- 3 //doble par
+					Si esColor Entonces
+						puntaje <- 6 //Color
+					SiNo
+						Si esEscalera Entonces
+							puntaje <- 5 //Escalera
+						Sino 
+							Si trios = 1 Entonces
+								puntaje <- 4 //trios
 							SiNo
-								Si pares = 1 Entonces 
-									puntaje <- 2 //par
-								Sino 
-									puntaje <- 1 //Carta Alta
+								Si pares = 2 Entonces
+									puntaje <- 3 //doble par
+								SiNo
+									Si pares = 1 Entonces 
+										puntaje <- 2 //par
+									Sino 
+										puntaje <- 1 //Carta Alta
+									FinSi
 								FinSi
 							FinSi
 						FinSi
@@ -300,7 +343,7 @@ Funcion puntaje <- EvaluarMano(mano_valores, mano_palo)
 				FinSi
 			FinSi
 		FinSi
-	FinSi
+	Finsi
 	
 FinFuncion
 
@@ -315,11 +358,13 @@ SubProceso MostrarNombreJugada(puntaje)
 		7: Escribir "Full House"
 		8: Escribir "Poker"
 		9: Escribir "Escalera de Color"
+		10: Escribir "Escalera Real"
 	FinSegun
 FinSubProceso
 
 SubProceso DescarteMaquina(maq_valores, maq_palo)
-	definir i, puntaje,pospar como entero
+	definir i, puntaje,pospar,cand_val, cand_palo, j como entero
+	definir es_repetido como logico
 	
 	//Evaluamos la mano inicial de la maquina
 	puntaje <- EvaluarMano(maq_valores, maq_palo)
@@ -328,8 +373,25 @@ SubProceso DescarteMaquina(maq_valores, maq_palo)
 	Si puntaje = 1 Entonces //carta alta
 		//Si tiene carta alta, cambia las 3 cartas mas bajas
 		Para i=0 hasta 2 con paso 1 Hacer
-			maq_valores[i] <- Aleatorio(2,14)
-			maq_palo[i] <- Aleatorio(1,4)
+			repetir 
+				cand_val <- Aleatorio(2,14)
+				cand_palo <- Aleatorio(1,4)
+				es_repetido <- Falso
+				
+				//verificamos la mano de la maquina
+				para j=0 hasta 4 con paso 1 Hacer
+					si j <> i Entonces //se ignora la posicion actual
+						si maq_valores[j] = cand_val y maq_palo[j] = cand_palo Entonces
+							es_repetido <- Verdadero
+						FinSi
+					FinSi
+				FinPara
+			Mientras Que es_repetido = verdadero
+			
+			//se guarda la carta no repetida
+			maq_valores[i] <- cand_val
+			maq_palo[i] <- cand_palo
+			
 		FinPara
 		OrdenarMano(maq_valores,maq_palo)
 		Escribir "La máquina decidió cambiar 3 cartas."
@@ -353,7 +415,7 @@ SubProceso DescarteMaquina(maq_valores, maq_palo)
 			FinPara
 			
 			OrdenarMano(maq_valores, maq_palo)
-			Escribir "La máquina decidió conservar su par y cambiar 3 cartas."
+			Escribir "La máquina decidió cambiar algunas cartas."
 		SiNo
 			//Si tiene doble par, trio o superior, prefiere conservar su mano
 			Escribir "La máquina decidió conservar sus cartas."
@@ -392,8 +454,8 @@ SubProceso MostrarReglas
 	Escribir "1. Cada jugador recibe 5 cartas."
 	Escribir "2. Podés cambiar de 0 a 5 cartas en el descarte."
 	Escribir "3. Gana la mano con la combinación más alta:"
-	Escribir "   - Escalera de Color > Poker > Full House >"
-	Escribir "     Color > Escalera > Trio > Doble Par > Par"
+	Escribir "   -Escalera Real > Escalera de Color > Poker > Full House >"
+	Escribir "     Color > Escalera > Trio > Doble Par > Par > Carta Alta"
 	Escribir "==============================================="
 	Escribir "Presioná cualquier tecla para volver..."
 	Esperar Tecla
@@ -433,6 +495,7 @@ SubProceso AnimacionBienvenida
         Escribir ""
         Escribir "         . . .                             . . .          "
         Esperar 300 Milisegundos
+		Limpiar Pantalla
     FinPara
 	
     Escribir ""
