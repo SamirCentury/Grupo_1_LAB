@@ -1,128 +1,182 @@
 SubProceso CargarColores(colores)
-	Definir i Como Entero;
-	
-	Para i <- 1 Hasta 36 Con Paso 1 Hacer
-		colores[i] = "N";
-	FinPara
-	
-	// Casilla 0 especial, unico verde
-	colores[0] = "V";
+    Definir i Como Entero;
+    
+    Para i <- 0 Hasta 36 Con Paso 1 Hacer
+        colores[i] = "N";
+    FinPara
+    
+    colores[0] = "V";
+    
+    colores[1]  = "R"; colores[3]  = "R"; colores[5]  = "R"; colores[7]  = "R";
+    colores[9]  = "R"; colores[12] = "R"; colores[14] = "R"; colores[16] = "R";
+    colores[18] = "R"; colores[19] = "R"; colores[21] = "R"; colores[23] = "R";
+    colores[25] = "R"; colores[27] = "R"; colores[30] = "R"; colores[32] = "R";
+    colores[34] = "R"; colores[36] = "R";
+FinSubProceso
 
-	colores[1] = "R"; colores[3] = "R"; colores[5] = "R"; colores[7] = "R";
-	colores[9] = "R"; colores[12] = "R"; colores[14] = "R"; colores[16] = "R";
-	colores[18] = "R"; colores[19] = "R"; colores[21] = "R"; colores[23] = "R";
-	colores[25] = "R"; colores[27] = "R"; colores[30] = "R"; colores[32] = "R";
-	colores[34] = "R"; colores[36] = "R";
+SubProceso MostrarBienvenida()
+    Escribir "==========================================";
+    Escribir "            BIENVENIDOS AL                ";
+    Escribir "         JUEGO DE LA RULETA               ";
+    Escribir "==========================================";
 FinSubProceso
 
 Funcion monto = SolicitarApuesta(saldoActual)
-	Definir monto Como Real;
-	Repetir
-		Escribir "Ingrese monto a apostar (Disponible: $", saldoActual, "):";
-		Leer monto;
-		Si monto <= 0 Entonces
-			Escribir "Error: El monto debe ser mayor a 0.";
-		FinSi
-		Si monto > saldoActual Entonces
-			Escribir "Error: Saldo insuficiente.";
-		FinSi
-	Hasta Que (monto > 0) Y (monto <= saldoActual)
+    Definir monto Como Real;
+    Repetir
+        Escribir "Saldo disponible: $", saldoActual;
+        Escribir "Ingrese monto a apostar:";
+        Leer monto;
+        Si monto <= 0 Entonces
+            Escribir "Error: El monto debe ser mayor a 0.";
+        FinSi
+        Si monto > saldoActual Entonces
+            Escribir "Error: Saldo insuficiente.";
+        FinSi
+    Hasta Que monto > 0 Y monto <= saldoActual
 FinFuncion
 
-Funcion tipo = ElegirTipoApuesta()
-	Definir tipo Como Entero;
-	Repetir
-		Escribir "";
-		Escribir "=== TIPO DE APUESTA ===";
-		Escribir "1. Pleno (Numero exacto 0-36) [Paga 35:1]";
-		Escribir "2. Color (Rojo o Negro) [Paga 1:1]";
-		Escribir "Seleccione una opcion (1-2):";
-		Leer tipo;
-		Si tipo <> 1 Y tipo <> 2 Entonces
-			Escribir "Opcion invalida. Reintente.";
-		FinSi
-	Hasta Que tipo = 1 o tipo = 2
+Funcion tipo = MenuApuestas()
+    Definir tipo Como Entero;
+    Repetir
+        Escribir "";
+        Escribir "=== TIPOS DE APUESTA DE LA RULETA ===";
+        Escribir "1. Pleno (0 al 36)    [Paga 35:1]";
+        Escribir "2. Color (Rojo/Negro) [Paga 1:1]";
+        Escribir "3. Par o Impar        [Paga 1:1]";
+        Escribir "Seleccione una opcion (1-3):";
+        Leer tipo;
+        Si tipo < 1 O tipo > 3 Entonces
+            Escribir "Opcion invalida... Reintente";
+        FinSi
+    Hasta Que tipo >= 1 Y tipo <= 3
+FinFuncion
+
+Funcion num = PedirNumeroPleno()
+    Definir num Como Entero;
+    Repetir
+        Escribir "Elija un numero (0 al 36):";
+        Leer num;
+        Si num < 0 O num > 36 Entonces
+            Escribir "Error: Numero fuera de rango.";
+        FinSi
+    Hasta Que num >= 0 Y num <= 36
+FinFuncion
+
+Funcion col = PedirColor()
+    Definir col Como Caracter;
+    Repetir
+        Escribir "Elija color (R: Rojo / N: Negro):";
+        Leer col;
+        col = Mayusculas(col);
+        Si col <> "R" Y col <> "N" Entonces
+            Escribir "Error: Ingrese solo R o N.";
+        FinSi
+    Hasta Que col = "R" O col = "N"
+FinFuncion
+
+Funcion paridad = PedirParidad()
+    Definir paridad Como Entero;
+    Repetir
+        Escribir "Elija paridad (1: Par / 2: Impar):";
+        Leer paridad;
+        Si paridad <> 1 Y paridad <> 2 Entonces
+            Escribir "Error: Ingrese 1 para Par o 2 para Impar.";
+        FinSi
+    Hasta Que paridad = 1 O paridad = 2
+FinFuncion
+
+Funcion num = TirarRuleta()
+    Definir num Como Entero;
+    Escribir "";
+    Escribir "Girando la bola...";
+    num = Azar(37);
+FinFuncion
+
+SubProceso ResolverRonda(tipo, monto, colores, saldo Por Referencia)
+    Definir numElegido, numeroSalio, paridadElegida Como Entero;
+    Definir colElegido, colSalio Como Caracter;
+    
+    Segun tipo Hacer
+        1:
+            numElegido = PedirNumeroPleno();
+        2:
+            colElegido = PedirColor();
+        3:
+            paridadElegida = PedirParidad();
+    FinSegun
+    
+    numeroSalio = TirarRuleta();
+    colSalio = colores[numeroSalio];
+    Escribir "-> Salio el: ", numeroSalio, " (Color: ", colSalio, ")";
+    
+    Segun tipo Hacer
+        1:
+            Si numElegido = numeroSalio Entonces
+                Escribir "¡Acertaste el pleno! Ganaste $", (monto * 35);
+                saldo = saldo + (monto * 35);
+            Sino
+                Escribir "Perdiste :( $", monto;
+                saldo = saldo - monto;
+            FinSi
+            
+        2:
+            // Si sale 0 (Verde), la casa gana frente a Rojo/Negro
+            Si (colElegido = colSalio) Y (numeroSalio <> 0) Entonces
+                Escribir "¡Acertaste el color! Ganaste $", monto;
+                saldo = saldo + monto;
+            Sino
+                Escribir "Color incorrecto (o salio el 0). Perdiste $", monto;
+                saldo = saldo - monto;
+            FinSi
+            
+        3:
+            // El 0 no es par ni impar; la casa gana
+            Si (numeroSalio <> 0) Y (((paridadElegida = 1) Y (numeroSalio MOD 2 = 0)) O ((paridadElegida = 2) Y (numeroSalio MOD 2 <> 0))) Entonces
+                Escribir "¡Acertaste la paridad! Ganaste $", monto;
+                saldo = saldo + monto;
+            Sino
+                Escribir "Paridad incorrecta (o salio el 0). Perdiste $", monto;
+                saldo = saldo - monto;
+            FinSi
+    FinSegun
+FinSubProceso
+
+Funcion continua = DeseaContinuar(saldoActual)
+    Definir continua Como Caracter;
+    Si saldoActual > 0 Entonces
+        Escribir "";
+        Escribir "¿Desea jugar otra ronda en la Ruleta? (S/N):";
+        Leer continua;
+    Sino
+        Escribir "Te has quedado sin saldo.";
+        continua = "N";
+    FinSi
 FinFuncion
 
 Algoritmo Ruleta_Laboratorio
-	Dimension colores[37];
-	Definir colores Como Caracter;
-	Definir saldo, apuesta Como Real;
-	Definir tipoApuesta, numeroElegido, numeroSalio Como Entero;
-	Definir colorElegido, colorSalio, seguir Como Caracter;
-	
-	CargarColores(colores);
-	saldo = 1000;
-	seguir = "S";
-	
-	Escribir "----------------------------------";
-	Escribir " SISTEMA DE RULETA - LABORATORIO ";
-	Escribir "----------------------------------";
-	
-	Mientras (saldo > 0) y (seguir = "S" o seguir = "s") Hacer
-		Escribir "";
-		Escribir ">>> Saldo actual: $", saldo;
-		
-		apuesta = SolicitarApuesta(saldo);
-		tipoApuesta = ElegirTipoApuesta();
-		
-		Si tipoApuesta = 1 Entonces
-			// Apuesta Pleno
-			Repetir
-				Escribir "Elija un numero (0 al 36):";
-				Leer numeroElegido;
-				Si numeroElegido < 0 o numeroElegido > 36 Entonces
-					Escribir "Error: Numero fuera de rango.";
-				FinSi
-			Hasta Que numeroElegido >= 0 y numeroElegido <= 36
-		Sino
-			// Apuesta Color
-			Repetir
-				Escribir "Elija el color (R para Rojo / N para Negro):";
-				Leer colorElegido;
-				colorElegido = Mayusculas(colorElegido);
-				Si colorElegido <> "R" y colorElegido <> "N" Entonces
-					Escribir "Error: Debe ingresar R o N.";
-				FinSi
-			Hasta Que colorElegido = "R" o colorElegido = "N"
-		FinSi
-		
-		Escribir "";
-		Escribir "Girando la ruleta...";
-		numeroSalio = Azar(37); // Genera 0 a 36
-		colorSalio = colores[numeroSalio];
-		
-		Escribir "-> Bola cayó en: ", numeroSalio, " (Color: ", colorSalio, ")";
-		
-		// Liquidación de la apuesta
-		Si tipoApuesta = 1 Entonces
-			Si numeroElegido = numeroSalio Entonces
-				Escribir "¡ACERTASTE EL PLENO! Ganaste $", (apuesta * 35);
-				saldo = saldo + (apuesta * 35);
-			Sino
-				Escribir "No hubo suerte con el pleno. Perdiste $", apuesta;
-				saldo = saldo - apuesta;
-			FinSi
-		Sino
-			// Si sale el 0 (Verde), la casa siempre gana las apuestas simples
-			Si colorElegido = colorSalio Y numeroSalio <> 0 Entonces
-				Escribir "¡ACERTASTE EL COLOR! Ganaste $", apuesta;
-				saldo = saldo + apuesta;
-			Sino
-				Escribir "Color incorrecto (o salio el 0). Perdiste $", apuesta;
-				saldo = saldo - apuesta;
-			FinSi
-		FinSi
-		
-		Si saldo > 0 Entonces
-			Escribir "";
-			Escribir "¿Desea realizar otra tirada? (S/N):";
-			Leer seguir;
-		Sino
-			Escribir "Te has quedado sin fichas.";
-		FinSi
-	FinMientras
-	
-	Escribir "";
-	Escribir "Partida terminada. Te retiras con un saldo final de: $", saldo;
+    Dimension colores[37];
+    Definir colores Como Caracter;
+    Definir saldo, monto Como Real;
+    Definir tipo Como Entero;
+    Definir seguir Como Caracter;
+    
+    CargarColores(colores);
+    MostrarBienvenida();
+    
+    saldo = 1000; //saldo de prueba
+    seguir = "S";
+    
+    Mientras (saldo > 0) Y (seguir = "S" O seguir = "s") Hacer
+        Escribir "";
+        monto = SolicitarApuesta(saldo);
+        tipo = MenuApuestas();
+        
+        ResolverRonda(tipo, monto, colores, saldo);
+        
+        seguir = DeseaContinuar(saldo);
+    FinMientras
+    
+    Escribir "";
+    Escribir "Fin de la partida. Te retiras con un saldo final de: $", saldo;
 FinAlgoritmo
