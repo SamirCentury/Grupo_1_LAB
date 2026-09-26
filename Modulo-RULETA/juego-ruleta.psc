@@ -44,12 +44,13 @@ Funcion tipo = MenuApuestas()
         Escribir "1. Pleno (0 al 36)    [Paga 35:1]";
         Escribir "2. Color (Rojo/Negro) [Paga 1:1]";
         Escribir "3. Par o Impar        [Paga 1:1]";
-        Escribir "Seleccione una opcion (1-3):";
+		Escribir "4. Falta (1-18) / Pasa (19-36) [Paga 1:1]";
+        Escribir "Seleccione una opcion (1-4):";
         Leer tipo;
-        Si tipo < 1 O tipo > 3 Entonces
+        Si tipo < 1 O tipo > 4 Entonces
             Escribir "Opcion invalida... Reintente";
         FinSi
-    Hasta Que tipo >= 1 Y tipo <= 3
+    Mientras Que tipo < 1 O tipo > 4
 FinFuncion
 
 Funcion num = PedirNumeroPleno()
@@ -58,9 +59,9 @@ Funcion num = PedirNumeroPleno()
         Escribir "Elija un numero (0 al 36):";
         Leer num;
         Si num < 0 O num > 36 Entonces
-            Escribir "Error: Numero fuera de rango.";
+            Escribir "Error: Numero fuera de rango";
         FinSi
-    Hasta Que num >= 0 Y num <= 36
+    Mientras Que num < 0 O num > 36
 FinFuncion
 
 Funcion col = PedirColor()
@@ -70,9 +71,9 @@ Funcion col = PedirColor()
         Leer col;
         col = Mayusculas(col);
         Si col <> "R" Y col <> "N" Entonces
-            Escribir "Error: Ingrese solo R o N.";
+            Escribir "Error: Ingrese solo R o N";
         FinSi
-    Hasta Que col = "R" O col = "N"
+    Mientras Que col <> "R" Y col <> "N"
 FinFuncion
 
 Funcion paridad = PedirParidad()
@@ -81,9 +82,20 @@ Funcion paridad = PedirParidad()
         Escribir "Elija paridad (1: Par / 2: Impar):";
         Leer paridad;
         Si paridad <> 1 Y paridad <> 2 Entonces
-            Escribir "Error: Ingrese 1 para Par o 2 para Impar.";
+            Escribir "Error: Ingrese 1 para Par o 2 para Impar";
         FinSi
-    Hasta Que paridad = 1 O paridad = 2
+    Mientras Que paridad <> 1 Y paridad <> 2
+FinFuncion
+
+Funcion rango = PedirFaltaPasa()
+    Definir rango Como Entero;
+    Repetir
+        Escribir "Elija rango (1: Falta [1-18] / 2: Pasa [19-36]):";
+        Leer rango;
+        Si rango <> 1 Y rango <> 2 Entonces
+            Escribir "Error: Ingrese 1 para Falta o 2 para Pasa";
+        FinSi
+    Mientras Que rango <> 1 Y rango <> 2
 FinFuncion
 
 Funcion num = TirarRuleta()
@@ -93,10 +105,11 @@ Funcion num = TirarRuleta()
     num = Azar(37);
 FinFuncion
 
-SubProceso ResolverRonda(tipo, monto, colores, saldo Por Referencia)
+SubProceso ResolverRonda(tipo, monto, colores, saldo, rangoElegido Por Referencia)
     Definir numElegido, numeroSalio, paridadElegida Como Entero;
     Definir colElegido, colSalio Como Caracter;
     
+	// Entrada de datos segun el tipo de jugada
     Segun tipo Hacer
         1:
             numElegido = PedirNumeroPleno();
@@ -104,8 +117,11 @@ SubProceso ResolverRonda(tipo, monto, colores, saldo Por Referencia)
             colElegido = PedirColor();
         3:
             paridadElegida = PedirParidad();
+		4: 
+			rangoElegido = PedirFaltaPasa();
     FinSegun
     
+	// Gira la bolaa
     numeroSalio = TirarRuleta();
     colSalio = colores[numeroSalio];
     Escribir "-> Salio el: ", numeroSalio, " (Color: ", colSalio, ")";
@@ -137,6 +153,15 @@ SubProceso ResolverRonda(tipo, monto, colores, saldo Por Referencia)
                 saldo = saldo + monto;
             Sino
                 Escribir "Paridad incorrecta (o salio el 0). Perdiste $", monto;
+                saldo = saldo - monto;
+            FinSi
+		4:
+            // Si sale 0, la casa gana
+            Si (numeroSalio <> 0) Y (((rangoElegido = 1) Y (numeroSalio >= 1 Y numeroSalio <= 18)) O ((rangoElegido = 2) Y (numeroSalio >= 19 Y numeroSalio <= 36))) Entonces
+                Escribir "¡Acertaste el rango! Ganaste $", monto;
+                saldo = saldo + monto;
+            Sino
+                Escribir "Rango incorrecto (o salio el 0). Perdiste $", monto;
                 saldo = saldo - monto;
             FinSi
     FinSegun
@@ -172,11 +197,11 @@ Algoritmo Ruleta_Laboratorio
         monto = SolicitarApuesta(saldo);
         tipo = MenuApuestas();
         
-        ResolverRonda(tipo, monto, colores, saldo);
+        ResolverRonda(tipo, monto, colores, saldo,rangoElegido);
         
         seguir = DeseaContinuar(saldo);
     FinMientras
     
     Escribir "";
-    Escribir "Fin de la partida. Te retiras con un saldo final de: $", saldo;
+    Escribir "Fin de la partida... Te retiras con un saldo final de: $", saldo;
 FinAlgoritmo
