@@ -45,12 +45,13 @@ Funcion tipo = MenuApuestas()
         Escribir "2. Color (Rojo/Negro) [Paga 1:1]";
         Escribir "3. Par o Impar        [Paga 1:1]";
 		Escribir "4. Falta (1-18) / Pasa (19-36) [Paga 1:1]";
-        Escribir "Seleccione una opcion (1-4):";
+		Escribir "5. Docenas (1-12, 13-24, 25-36) [Paga 2:1]";
+        Escribir "Seleccione una opcion (1-5):";
         Leer tipo;
-        Si tipo < 1 O tipo > 4 Entonces
+        Si tipo < 1 O tipo > 5 Entonces
             Escribir "Opcion invalida... Reintente";
         FinSi
-    Mientras Que tipo < 1 O tipo > 4
+    Mientras Que tipo < 1 O tipo > 5
 FinFuncion
 
 Funcion num = PedirNumeroPleno()
@@ -98,6 +99,20 @@ Funcion rango = PedirFaltaPasa()
     Mientras Que rango <> 1 Y rango <> 2
 FinFuncion
 
+Funcion docena = PedirDocena() 
+	Definir docena Como Entero;
+	Repetir
+		Escribir "Elija la docena:";
+        Escribir "1. Primera docena (1 al 12)";
+        Escribir "2. Segunda docena (13 al 24)";
+        Escribir "3. Tercera docena (25 al 36)";
+        Leer docena;
+        Si docena < 1 O docena > 3 Entonces
+            Escribir "Error: Ingrese una opcion valida (1, 2 o 3).";
+        FinSi
+	Mientras Que docena < 1 O docena > 3
+FinFuncion
+
 Funcion num = TirarRuleta()
     Definir num Como Entero;
     Escribir "";
@@ -105,8 +120,8 @@ Funcion num = TirarRuleta()
     num = Azar(37);
 FinFuncion
 
-SubProceso ResolverRonda(tipo, monto, colores, saldo, rangoElegido Por Referencia)
-    Definir numElegido, numeroSalio, paridadElegida Como Entero;
+SubProceso ResolverRonda(tipo, monto, colores, saldo Por Referencia)
+    Definir numElegido, numeroSalio, paridadElegida, rangoElegido, decenaElegida Como Entero;
     Definir colElegido, colSalio Como Caracter;
     
 	// Entrada de datos segun el tipo de jugada
@@ -119,6 +134,8 @@ SubProceso ResolverRonda(tipo, monto, colores, saldo, rangoElegido Por Referenci
             paridadElegida = PedirParidad();
 		4: 
 			rangoElegido = PedirFaltaPasa();
+		5:
+			decenaElegida = PedirDocena();
     FinSegun
     
 	// Gira la bolaa
@@ -164,6 +181,15 @@ SubProceso ResolverRonda(tipo, monto, colores, saldo, rangoElegido Por Referenci
                 Escribir "Rango incorrecto (o salio el 0). Perdiste $", monto;
                 saldo = saldo - monto;
             FinSi
+		5:
+			// Si sale 0, la casa gana
+			si (numeroSalio <> 0) Y ((docenaElegida = 1) Y (numeroSalio >= 1 Y numeroSalio <= 12)) O ((docenaElegida = 2) Y (numeroSalio >= 13 Y numeroSalio <= 24)) O ((docenaElegida = 3) Y (numeroSalio >= 25 Y numeroSalio <= 36)) Entonces
+				Escribir "¡Acertaste la docena! Ganaste $", (monto * 2);
+                saldo = saldo + (monto * 2);
+            Sino
+                Escribir "Docena incorrecta (o salio el 0). Perdiste $", monto;
+                saldo = saldo - monto;				
+			FinSi
     FinSegun
 FinSubProceso
 
@@ -197,7 +223,7 @@ Algoritmo Ruleta_Laboratorio
         monto = SolicitarApuesta(saldo);
         tipo = MenuApuestas();
         
-        ResolverRonda(tipo, monto, colores, saldo,rangoElegido);
+        ResolverRonda(tipo, monto, colores, saldo);
         
         seguir = DeseaContinuar(saldo);
     FinMientras
