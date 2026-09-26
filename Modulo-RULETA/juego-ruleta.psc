@@ -21,6 +21,48 @@ SubProceso MostrarBienvenida()
     Escribir "==========================================";
 FinSubProceso
 
+SubProceso DibujarPanoRuleta()
+    Escribir "==========================================================================";
+    Escribir "                         PANEL DE LA RULETA EUROPEA                       ";
+    Escribir "==========================================================================";
+    Escribir "  +-----+---------------------------------------------------------------+";
+    Escribir "  |     | [ 3R] [ 6N] [ 9R] [12R] [15N] [18R] [21R] [24N] [27R] [30R] [33N] [36R] |";
+    Escribir "  |     |---------------------------------------------------------------|";
+    Escribir "  | 0 V | [ 2N] [ 5R] [ 8N] [11N] [14R] [17N] [20N] [23R] [26N] [29N] [32R] [35N] |";
+    Escribir "  |     |---------------------------------------------------------------|";
+    Escribir "  |     | [ 1R] [ 4N] [ 7R] [10N] [13N] [16R] [19R] [22N] [25R] [28N] [31N] [34R] |";
+    Escribir "  +-----+---------------------------------------------------------------+";
+    Escribir "        |          1ra DOCENA           |          2da DOCENA           |          3ra DOCENA           |";
+    Escribir "        |            (1 - 12)           |           (13 - 24)           |           (25 - 36)           |";
+    Escribir "        +-------------------------------+-------------------------------+-------------------------------+";
+    Escribir "        |    1 - 18     |      PAR      |     ROJO      |     NEGRO     |     IMPAR     |    19 - 36    |";
+    Escribir "        +---------------+---------------+---------------+---------------+---------------+---------------+";
+    Escribir "  Referencias: [R] = Rojo | [N] = Negro | [V] = Verde (0)";
+    Escribir "==========================================================================";
+FinSubProceso
+
+// Simula visualmente el giro de la bola en la rueda
+SubProceso AnimarGiroRuleta(numeroSalio, colorSalio)
+    Escribir "";
+    Escribir "           .---.          ";
+    Escribir "        .-/     /-.       ";
+    Escribir "       /   ( o )   /      Girando la rueda y lanzando la bola...";
+    Escribir "      |   /     /   |     * clic * * clac * * clic *";
+    Escribir "       /   ( o )   /      ";
+    Escribir "        .-/     /-.       ";
+    Escribir "           ---          ";
+    Esperar 1 Segundos;
+    
+    Escribir "";
+    Escribir "      +-------------------------------------------+";
+    Escribir "      |           ¡LA BOLA SE HA DETENIDO!        |";
+    Escribir "      |                                           |";
+    Escribir "      |             NUMERO GANADOR: [ ", numeroSalio, " ]         |";
+    Escribir "      |                COLOR: [ ", colorSalio, " ]                |";
+    Escribir "      +-------------------------------------------+";
+    Escribir "";
+FinSubProceso
+
 Funcion monto = SolicitarApuesta(saldoActual)
     Definir monto Como Real;
     Repetir
@@ -115,13 +157,11 @@ FinFuncion
 
 Funcion num = TirarRuleta()
     Definir num Como Entero;
-    Escribir "";
-    Escribir "Girando la bola...";
     num = Azar(37);
 FinFuncion
 
 SubProceso ResolverRonda(tipo, monto, colores, saldo Por Referencia)
-    Definir numElegido, numeroSalio, paridadElegida, rangoElegido, decenaElegida Como Entero;
+    Definir numElegido, numeroSalio, paridadElegida, rangoElegido, docenaElegida Como Entero;
     Definir colElegido, colSalio Como Caracter;
     
 	// Entrada de datos segun el tipo de jugada
@@ -135,13 +175,13 @@ SubProceso ResolverRonda(tipo, monto, colores, saldo Por Referencia)
 		4: 
 			rangoElegido = PedirFaltaPasa();
 		5:
-			decenaElegida = PedirDocena();
+			docenaElegida = PedirDocena();
     FinSegun
     
 	// Gira la bolaa
     numeroSalio = TirarRuleta();
     colSalio = colores[numeroSalio];
-    Escribir "-> Salio el: ", numeroSalio, " (Color: ", colSalio, ")";
+	AnimarGiroRuleta(numeroSalio, colSalio);
     
     Segun tipo Hacer
         1:
@@ -180,16 +220,15 @@ SubProceso ResolverRonda(tipo, monto, colores, saldo Por Referencia)
             Sino
                 Escribir "Rango incorrecto (o salio el 0). Perdiste $", monto;
                 saldo = saldo - monto;
-            FinSi
+            FinSi		
 		5:
-			// Si sale 0, la casa gana
-			si (numeroSalio <> 0) Y ((docenaElegida = 1) Y (numeroSalio >= 1 Y numeroSalio <= 12)) O ((docenaElegida = 2) Y (numeroSalio >= 13 Y numeroSalio <= 24)) O ((docenaElegida = 3) Y (numeroSalio >= 25 Y numeroSalio <= 36)) Entonces
-				Escribir "¡Acertaste la docena! Ganaste $", (monto * 2);
+            Si (numeroSalio <> 0) Y ( ((docenaElegida = 1) Y (numeroSalio >= 1 Y numeroSalio <= 12)) O ((docenaElegida = 2) Y (numeroSalio >= 13 Y numeroSalio <= 24)) O ((docenaElegida = 3) Y (numeroSalio >= 25 Y numeroSalio <= 36)) ) Entonces
+                Escribir "¡Acertaste la docena! Ganaste $", (monto * 2);
                 saldo = saldo + (monto * 2);
             Sino
                 Escribir "Docena incorrecta (o salio el 0). Perdiste $", monto;
-                saldo = saldo - monto;				
-			FinSi
+                saldo = saldo - monto;              
+            FinSi
     FinSegun
 FinSubProceso
 
@@ -221,6 +260,7 @@ Algoritmo Ruleta_Laboratorio
     Mientras (saldo > 0) Y (seguir = "S" O seguir = "s") Hacer
         Escribir "";
         monto = SolicitarApuesta(saldo);
+		DibujarPanoRuleta();
         tipo = MenuApuestas();
         
         ResolverRonda(tipo, monto, colores, saldo);
