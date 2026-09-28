@@ -1,13 +1,14 @@
+//=================================================================================
+// COMIENZO BLACK JACK 21
 // ==============================================================================
 // BLOQUE A: PROGRAMA PRINCIPAL (PANTALLA Y MENÚ)
-// -> Esto va adentro de tu "Algoritmo principal".
 // -> Controla qué opción elige el usuario y conecta con las funciones de abajo.
 // ==============================================================================
-Algoritmo blackjack_proyecto
+SubProceso  blackjack(saldo Por Referencia)
 	
 	// --- [A.1] VARIABLES DE CONTROL DEL SISTEMA ---
 	Definir op Como Entero;        // Guarda la opción elegida del menú
-	Definir saldo Como Real;       // Guarda la plata total acumulada del usuario
+//	Definir saldo Como Real;       // Guarda la plata total acumulada del usuario
 	
 	saldo <- 0; // Regla: arranca en 0 para obligar a ingresar dinero antes de jugar
 	
@@ -34,7 +35,7 @@ Algoritmo blackjack_proyecto
 				
 				// --- [CONEXIÓN 2]: LLAMA AL TEXTO DE REGLAS ---
 			2:
-				MostrarReglas();
+				MostrarReglass();
 				
 				// --- [CONEXIÓN 3]: VERIFICACIÓN DE FONDOS Y ARRANQUE DE RONDA ---
 			3:
@@ -59,7 +60,9 @@ Algoritmo blackjack_proyecto
 		FinSegun;
 		
 	Hasta Que op = 4;
-FinAlgoritmo
+	
+FinSubProceso
+
 
 
 // ==============================================================================
@@ -68,22 +71,22 @@ FinAlgoritmo
 // ==============================================================================
 
 // [B.1] Permite sumar dinero a la cuenta asegurando que no metan números negativos
-SubProceso CargarSaldo(saldo Por Referencia)
-	Definir ingreso Como Real;
-	Escribir "";
-	Escribir "--- PANEL DE DEPOSITOS ---";
-	Repetir
-		Escribir "Ingrese el monto a depositar: $";
-		Leer ingreso;
-		Si ingreso <= 0 Entonces
-			Escribir " [!] Error: Debe ingresar una cifra mayor a 0.";
-		FinSi;
-	Hasta Que ingreso > 0;
-	
-	saldo <- saldo + ingreso; // 'Por Referencia' actualiza la variable del menú principal
-	Escribir " [OK] Deposito exitoso. Saldo disponible: $", saldo;
-	Esperar Tecla;
-FinSubProceso
+//SubProceso CargarSaldo(saldo Por Referencia)
+//	Definir ingreso Como Real;
+//	Escribir "";
+//	Escribir "--- PANEL DE DEPOSITOS ---";
+//	Repetir
+//		Escribir "Ingrese el monto a depositar: $";
+//		Leer ingreso;
+//		Si ingreso <= 0 Entonces
+//			Escribir " [!] Error: Debe ingresar una cifra mayor a 0.";
+//		FinSi;
+//	Hasta Que ingreso > 0;
+//	
+//	saldo <- saldo + ingreso; // 'Por Referencia' actualiza la variable del menú principal
+//	Escribir " [OK] Deposito exitoso. Saldo disponible: $", saldo;
+//	Esperar Tecla;
+//FinSubProceso
 
 // [B.2] Solicita cuánto apostar y frena si quieren apostar más de lo que tienen
 Funcion monto <- PedirMontoApuesta(saldo)
@@ -195,7 +198,7 @@ SubProceso JugarRonda(saldo Por Referencia)
 	
 	// [C.5] Turno automático de la banca (si el jugador sigue en carrera)
 	Si jugador <= 21 O (jugoMano2 = Verdadero Y jugadorMano2 <= 21) Entonces
-		Mientras crupier < 17 Hacer
+		Mientras crupier <= 16 Hacer
 			crupier <- crupier + SacarCarta();
 		FinMientras;
 	FinSi;
@@ -298,7 +301,7 @@ SubProceso DibujarManoGrafica
 FinSubProceso
 
 // [E.3] Texto con las reglas oficiales
-SubProceso MostrarReglas
+SubProceso MostrarReglass
 	Limpiar Pantalla;
 //	Escribir "===================================================== REGLAS =====================================================";
 //	Escribir " 1. OBJETIVO: Sumar 21 o lo mas cercano posible sin pasarte. Si sumas 22 o mas, pierdes.";
