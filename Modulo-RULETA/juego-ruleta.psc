@@ -1,12 +1,16 @@
+// Casilla 0: Verde ('V') | 18 Rojas ('R') | 18 Negras ('N')
 SubProceso CargarColores(colores)
     Definir i Como Entero;
     
+	// Inicializamos todas las casillas en Negro por defecto
     Para i <- 0 Hasta 36 Con Paso 1 Hacer
         colores[i] = "N";
     FinPara
     
+	// Asignamos la casilla verde
     colores[0] = "V";
     
+	// Asignamos explicitamente las casillas rojas
     colores[1]  = "R"; colores[3]  = "R"; colores[5]  = "R"; colores[7]  = "R";
     colores[9]  = "R"; colores[12] = "R"; colores[14] = "R"; colores[16] = "R";
     colores[18] = "R"; colores[19] = "R"; colores[21] = "R"; colores[23] = "R";
@@ -14,6 +18,7 @@ SubProceso CargarColores(colores)
     colores[34] = "R"; colores[36] = "R";
 FinSubProceso
 
+// Banner de presentacion de la mesa
 SubProceso MostrarBienvenida()
     Escribir "==========================================";
     Escribir "            BIENVENIDOS AL                ";
@@ -21,6 +26,7 @@ SubProceso MostrarBienvenida()
     Escribir "==========================================";
 FinSubProceso
 
+// Interfaz visual en consola
 SubProceso DibujarPanoRuleta()
     Escribir "==========================================================================";
     Escribir "                         PANEL DE LA RULETA EUROPEA                       ";
@@ -41,7 +47,7 @@ SubProceso DibujarPanoRuleta()
     Escribir "==========================================================================";
 FinSubProceso
 
-// Simula visualmente el giro de la bola en la rueda
+// Animacion de giro y cartel de revelacion del numero/color ganador
 SubProceso AnimarGiroRuleta(numeroSalio, colorSalio)
     Escribir "";
     Escribir "           .---.          ";
@@ -63,6 +69,7 @@ SubProceso AnimarGiroRuleta(numeroSalio, colorSalio)
     Escribir "";
 FinSubProceso
 
+// Valida que la apuesta sea positiva y no supere los fondos del usuario
 Funcion monto = SolicitarApuesta(saldoActual)
     Definir monto Como Real;
     Repetir
@@ -78,6 +85,7 @@ Funcion monto = SolicitarApuesta(saldoActual)
     Hasta Que monto > 0 Y monto <= saldoActual
 FinFuncion
 
+// Menu con las 5 modalidades de juego disponibles
 Funcion tipo = MenuApuestas()
     Definir tipo Como Entero;
     Repetir
@@ -96,6 +104,7 @@ Funcion tipo = MenuApuestas()
     Mientras Que tipo < 1 O tipo > 5
 FinFuncion
 
+// Valida la casilla exacta elegida por el jugador
 Funcion num = PedirNumeroPleno()
     Definir num Como Entero;
     Repetir
@@ -107,6 +116,7 @@ Funcion num = PedirNumeroPleno()
     Mientras Que num < 0 O num > 36
 FinFuncion
 
+// Valida la eleccion de color en mayusculas
 Funcion col = PedirColor()
     Definir col Como Caracter;
     Repetir
@@ -119,6 +129,7 @@ Funcion col = PedirColor()
     Mientras Que col <> "R" Y col <> "N"
 FinFuncion
 
+// Valida la eleccion para apuestas de paridad
 Funcion paridad = PedirParidad()
     Definir paridad Como Entero;
     Repetir
@@ -130,6 +141,7 @@ Funcion paridad = PedirParidad()
     Mientras Que paridad <> 1 Y paridad <> 2
 FinFuncion
 
+// Valida la eleccion para apuestas de mitad de tablero
 Funcion rango = PedirFaltaPasa()
     Definir rango Como Entero;
     Repetir
@@ -141,6 +153,7 @@ Funcion rango = PedirFaltaPasa()
     Mientras Que rango <> 1 Y rango <> 2
 FinFuncion
 
+// Valida el tercio del paño apostado (1ra, 2da o 3ra docena)
 Funcion docena = PedirDocena() 
 	Definir docena Como Entero;
 	Repetir
@@ -155,16 +168,18 @@ Funcion docena = PedirDocena()
 	Mientras Que docena < 1 O docena > 3
 FinFuncion
 
+// Genera el resultado de la casilla al azar entre 0 y 36
 Funcion num = TirarRuleta()
     Definir num Como Entero;
     num = Azar(37);
 FinFuncion
 
+// pide datos, gira, evalua y actualiza el saldo
 SubProceso ResolverRonda(tipo, monto, colores, saldo Por Referencia)
     Definir numElegido, numeroSalio, paridadElegida, rangoElegido, docenaElegida Como Entero;
     Definir colElegido, colSalio Como Caracter;
     
-	// Entrada de datos segun el tipo de jugada
+	// 1. Entrada de datos segun el tipo de jugada
     Segun tipo Hacer
         1:
             numElegido = PedirNumeroPleno();
@@ -178,11 +193,12 @@ SubProceso ResolverRonda(tipo, monto, colores, saldo Por Referencia)
 			docenaElegida = PedirDocena();
     FinSegun
     
-	// Gira la bolaa
+	// 2. Ejecucion del tiro y obtencion del color de la casilla
     numeroSalio = TirarRuleta();
     colSalio = colores[numeroSalio];
 	AnimarGiroRuleta(numeroSalio, colSalio);
     
+	// 3. Evaluacion de victoria/derrota y ajuste del saldo del usuario
     Segun tipo Hacer
         1:
             Si numElegido = numeroSalio Entonces
@@ -194,7 +210,7 @@ SubProceso ResolverRonda(tipo, monto, colores, saldo Por Referencia)
             FinSi
             
         2:
-            // Si sale 0 (Verde), la casa gana frente a Rojo/Negro
+            // Apuesta Color: paga 1 a 1. El cero siempre pierde
             Si (colElegido = colSalio) Y (numeroSalio <> 0) Entonces
                 Escribir "¡Acertaste el color! Ganaste $", monto;
                 saldo = saldo + monto;
@@ -204,7 +220,7 @@ SubProceso ResolverRonda(tipo, monto, colores, saldo Por Referencia)
             FinSi
             
         3:
-            // El 0 no es par ni impar; la casa gana
+            // Apuesta Par/Impar: paga 1 a 1. El cero no es par ni impar
             Si (numeroSalio <> 0) Y (((paridadElegida = 1) Y (numeroSalio MOD 2 = 0)) O ((paridadElegida = 2) Y (numeroSalio MOD 2 <> 0))) Entonces
                 Escribir "¡Acertaste la paridad! Ganaste $", monto;
                 saldo = saldo + monto;
@@ -213,7 +229,7 @@ SubProceso ResolverRonda(tipo, monto, colores, saldo Por Referencia)
                 saldo = saldo - monto;
             FinSi
 		4:
-            // Si sale 0, la casa gana
+            // Apuesta Falta/Pasa: paga 1 a 1. El cero favorece a la casa
             Si (numeroSalio <> 0) Y (((rangoElegido = 1) Y (numeroSalio >= 1 Y numeroSalio <= 18)) O ((rangoElegido = 2) Y (numeroSalio >= 19 Y numeroSalio <= 36))) Entonces
                 Escribir "¡Acertaste el rango! Ganaste $", monto;
                 saldo = saldo + monto;
@@ -222,6 +238,7 @@ SubProceso ResolverRonda(tipo, monto, colores, saldo Por Referencia)
                 saldo = saldo - monto;
             FinSi		
 		5:
+			// Apuesta Docenas: paga 2 a 1
             Si (numeroSalio <> 0) Y ( ((docenaElegida = 1) Y (numeroSalio >= 1 Y numeroSalio <= 12)) O ((docenaElegida = 2) Y (numeroSalio >= 13 Y numeroSalio <= 24)) O ((docenaElegida = 3) Y (numeroSalio >= 25 Y numeroSalio <= 36)) ) Entonces
                 Escribir "¡Acertaste la docena! Ganaste $", (monto * 2);
                 saldo = saldo + (monto * 2);
@@ -232,6 +249,7 @@ SubProceso ResolverRonda(tipo, monto, colores, saldo Por Referencia)
     FinSegun
 FinSubProceso
 
+// Pregunta si desea seguir tirando, salvo que se haya quedado sin fondos
 Funcion continua = DeseaContinuar(saldoActual)
     Definir continua Como Caracter;
     Si saldoActual > 0 Entonces
@@ -244,6 +262,7 @@ Funcion continua = DeseaContinuar(saldoActual)
     FinSi
 FinFuncion
 
+// Subproceso principal exportable: se invoca desde el menu general del casino
 Algoritmo Ruleta_Laboratorio
     Dimension colores[37];
     Definir colores Como Caracter;
@@ -251,12 +270,14 @@ Algoritmo Ruleta_Laboratorio
     Definir tipo Como Entero;
     Definir seguir Como Caracter;
     
+	// Configuracion inicial de la mesa
     CargarColores(colores);
     MostrarBienvenida();
     
     saldo = 1000; //saldo de prueba
     seguir = "S";
     
+	// Ciclo de juego continuo mientras haya saldo y el usuario quiera jugar
     Mientras (saldo > 0) Y (seguir = "S" O seguir = "s") Hacer
         Escribir "";
         monto = SolicitarApuesta(saldo);
@@ -268,6 +289,7 @@ Algoritmo Ruleta_Laboratorio
         seguir = DeseaContinuar(saldo);
     FinMientras
     
+	// Pausa de cierre para informar el balance final antes de regresar al casino
     Escribir "";
     Escribir "Fin de la partida... Te retiras con un saldo final de: $", saldo;
 FinAlgoritmo
