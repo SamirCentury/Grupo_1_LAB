@@ -767,15 +767,20 @@ FinSubProceso
 //================================================================================
 // INICIO DE LA LOGICA DE LA RULETA
 //================================================================================
+
+// Subproceso que mapea cada uno de los 37 casilleros (0 al 36) con su color reglamentario
 SubProceso CargarColores(colores)
     Definir i Como Entero;
     
+	// 1. Inicializamos por defecto todo el paño en Negro ("N")
     Para i <- 0 Hasta 36 Con Paso 1 Hacer
         colores[i] = "N";
     FinPara
     
+	// 2. Casillero especial de la banca: el 0 es Verde ("V")
     colores[0] = "V";
     
+	// 3. Sobrescribimos los 18 números rojos reglamentarios de la ruleta europea
     colores[1]  = "R"; colores[3]  = "R"; colores[5]  = "R"; colores[7]  = "R";
     colores[9]  = "R"; colores[12] = "R"; colores[14] = "R"; colores[16] = "R";
     colores[18] = "R"; colores[19] = "R"; colores[21] = "R"; colores[23] = "R";
@@ -783,6 +788,7 @@ SubProceso CargarColores(colores)
     colores[34] = "R"; colores[36] = "R";
 FinSubProceso
 
+// Pantalla introductoria gráfica al iniciar el juego
 SubProceso MostrarBienvenida
 	Limpiar Pantalla;
     Escribir "==========================================";
@@ -791,6 +797,7 @@ SubProceso MostrarBienvenida
     Escribir "==========================================";
 FinSubProceso
 
+// Permite al jugador visualizar la distribucion de numeros, docenas y apuestas externas
 SubProceso DibujarPanoRuleta
 	Limpiar Pantalla;
     Escribir "==========================================================================";
@@ -835,6 +842,7 @@ SubProceso AnimarGiroRuleta(numeroSalio, colorSalio)
     Escribir "";
 FinSubProceso
 
+// Solicita y valida el importe de apuesta asegurando que cumpla el mínimo y no exceda el saldo
 Funcion monto = SolicitarApuesta(saldoActual)
 	Definir monto Como Real;
 	Definir opcionTexto como cadena;
@@ -855,12 +863,12 @@ Funcion monto = SolicitarApuesta(saldoActual)
 		Si EsValido(opcionTexto) = Verdadero Entonces
 			monto <- ConvertirANumero(opcionTexto);
 		SiNo
-			monto <- 0; // Si escribieron letras, asigna 0
+			monto <- 0; // Ante texto o simbolos invalidos, asigna 0 para fallar validacion
 		FinSi
 			
 		Limpiar Pantalla;
 		
-		// --- VALIDACIONES ---
+		// --- Validacion de limites de saldo ---
 		Si monto <= 0 Entonces
 			Escribir "Error: El monto debe ser un número válido mayor a 0.";
 		SiNo
@@ -877,13 +885,12 @@ Funcion monto = SolicitarApuesta(saldoActual)
 		Hasta Que monto >= montoMinimo Y monto <= saldoActual
 FinFuncion
 
-
+// Muestra las opciones de jugadas disponibles
 Funcion tipo = MenuApuestas
     Definir tipo Como Entero;
 	Definir opcionTexto como cadena;
     Repetir
         Escribir "";
-		Limpiar Pantalla;
         Escribir "=== TIPOS DE APUESTA DE LA RULETA ===";
         Escribir "1. Pleno (0 al 36)    [Paga 35:1]";
         Escribir "2. Color (Rojo/Negro) [Paga 1:1]";
@@ -908,12 +915,13 @@ Funcion tipo = MenuApuestas
     Mientras Que tipo < 1 O tipo > 5
 FinFuncion
 
+// Permite seleccionar un numero exacto
 Funcion num = PedirNumeroPleno
     Definir num Como Entero;
 	Definir opcionTexto como cadena;
 	
     Repetir
-        Escribir "Elija un numero (1 al 36):";
+        Escribir "Elija un numero (0 al 36):";
         Leer opcionTexto;
 		
 		//Llamamos a la funcion para que se cambie "," por "."
@@ -922,17 +930,18 @@ Funcion num = PedirNumeroPleno
 		Si EsValido(opcionTexto) = Verdadero Entonces
 		    num <- trunc(ConvertirANumero(opcionTexto)); //lo truncamos para obtener un valor entero
 		SiNo
-			num <- 0; // Si escribieron letras, asigna 0 para que caiga en 'De Otro Modo'
+			num <- -1; // -1 fuerza la entrada al bloque de error si se escribieron letras
 		FinSi
 		
 		
-		Si num <= 0 o num >=36 Entonces
-			Escribir "Error: Numero fuera de rango";
+		Si num < 0 o num > 36 Entonces
+			Escribir "Error: Numero fuera de rango (0 al 36)";
 		FinSi
 		
-    Mientras Que num <= 0  o num >= 36 
+    Mientras Que num < 0  o num > 36 
 FinFuncion
 
+// Pide la selección entre Rojo o Negro
 Funcion col = PedirColor
     Definir col Como Caracter;
     Repetir
@@ -945,6 +954,7 @@ Funcion col = PedirColor
     Mientras Que col <> "R" Y col <> "N"
 FinFuncion
 
+// Pide Par (1) o Impar (2)
 Funcion paridad = PedirParidad
     Definir paridad Como Entero;
 	Definir opcionTexto como cadena;
@@ -968,6 +978,7 @@ Funcion paridad = PedirParidad
     Mientras Que paridad <> 1 Y paridad <> 2
 FinFuncion
 
+// Pide Falta (1 al 18) o Pasa (19 al 36)
 Funcion rango = PedirFaltaPasa
     Definir rango Como Entero;
 	Definir opcionTexto como cadena;
@@ -990,6 +1001,7 @@ Funcion rango = PedirFaltaPasa
     Mientras Que rango <> 1 Y rango <> 2
 FinFuncion
 
+// Pide Primera (1-12), Segunda (13-24) o Tercera Docena (25-36)
 Funcion docena = PedirDocena
 	Definir docena Como Entero;
 	Definir opcionTexto como cadena;
@@ -1012,16 +1024,18 @@ Funcion docena = PedirDocena
 	Mientras Que docena < 1 O docena > 3
 FinFuncion
 
+// Genera un número aleatorio entre 0 y 36
 Funcion num = TirarRuleta
     Definir num Como Entero;
     num = Azar(37);
 FinFuncion
 
+// Procesa la tirada, compara las condiciones de victoria y ajusta los saldos
 SubProceso ResolverRonda(tipo, monto, colores, listaSaldos Por Referencia, listaGananciaAdmin Por Referencia, idSesion)
     Definir numElegido, numeroSalio, paridadElegida, rangoElegido, docenaElegida Como Entero;
     Definir colElegido, colSalio Como Caracter;
     
-	// Entrada de datos segun el tipo de jugada
+	// 1. Entrada de datos segun el tipo de jugada
     Segun tipo Hacer
         1:
             numElegido = PedirNumeroPleno();
@@ -1035,25 +1049,29 @@ SubProceso ResolverRonda(tipo, monto, colores, listaSaldos Por Referencia, lista
 			docenaElegida = PedirDocena();
     FinSegun
     
-	// COBRO PREVENTIVO: Al girar, la apuesta ingresa al capital y reporte del admin
+	// 2. COBRO PREVENTIVO: Al girar, la apuesta ingresa al capital y reporte del admin
+	// Si el jugador pierde, no es necesario hacer ninguna operacion extra porque el dinero ya ingreso
 	listaSaldos[idSesion] <- listaSaldos[idSesion] - monto;
 	listaSaldos[0] <- listaSaldos[0] + monto;
 	listaGananciaAdmin[idSesion] <- listaGananciaAdmin[idSesion] + monto;
 	
-	// Gira la bolaa
+	// 3. Giro de la rueda y se obtiene los resultados
     numeroSalio = TirarRuleta();
     colSalio = colores[numeroSalio];
 	AnimarGiroRuleta(numeroSalio, colSalio);
     
+	// 4. Liquidacion economica segun tipo de apuesta
     Segun tipo Hacer
         1:
+			// Se acredita (monto * 36) para devolver la apuesta inicial (1) + ganancia (35)
+            // A la banca se le debita (monto * 36), quedando con balance neto de -(monto * 35)
             Si numElegido = numeroSalio Entonces
                 Escribir "¡Acertaste el pleno! Ganaste $", (monto * 35);
-                listaSaldos[idSesion] <- listaSaldos[idSesion] + (monto * 35);
-				listaSaldos[0]<- listaSaldos[0] - (monto*35); //Banca: pierde y se descuenta el premio.
-				listaGananciaAdmin[idSesion] <- listaGananciaAdmin[idSesion] - (monto * 35);
+                listaSaldos[idSesion] <- listaSaldos[idSesion] + (monto * 36);
+				listaSaldos[0]<- listaSaldos[0] - (monto * 36); //Banca: pierde y se descuenta el premio.
+				listaGananciaAdmin[idSesion] <- listaGananciaAdmin[idSesion] - (monto * 36);
             Sino
-                Escribir "[X] Perdiste :( $", monto;
+                Escribir "No acertaste el pleno. Salio el ", numeroSalio, " ", colSalio, ". Perdiste $", monto;
 				// No se altera el admin acá porque la plata ya ingresó al inicio del tiro
             FinSi
             
@@ -1061,9 +1079,9 @@ SubProceso ResolverRonda(tipo, monto, colores, listaSaldos Por Referencia, lista
             // Si sale 0 (Verde), la casa gana frente a Rojo/Negro
             Si (colElegido = colSalio) Y (numeroSalio <> 0) Entonces
                 Escribir "¡Acertaste el color! Ganaste $", monto;
-                listaSaldos[idSesion] <- listaSaldos[idSesion] + (monto*2); //Saldo negativo.
-				listaSaldos[0] <- listaSaldos[0] - monto; //Saldo positivo.
-				listaGananciaAdmin[idSesion] <- listaGananciaAdmin[idSesion] - monto;
+                listaSaldos[idSesion] <- listaSaldos[idSesion] + (monto * 2); //Saldo negativo.
+				listaSaldos[0] <- listaSaldos[0] - (monto * 2); //Saldo positivo.
+				listaGananciaAdmin[idSesion] <- listaGananciaAdmin[idSesion] - (monto * 2);
             Sino
                 Escribir "Color incorrecto (o salio el 0). Perdiste $", monto;
             FinSi
@@ -1072,9 +1090,9 @@ SubProceso ResolverRonda(tipo, monto, colores, listaSaldos Por Referencia, lista
             // El 0 no es par ni impar; la casa gana
             Si (numeroSalio <> 0) Y (((paridadElegida = 1) Y (numeroSalio MOD 2 = 0)) O ((paridadElegida = 2) Y (numeroSalio MOD 2 <> 0))) Entonces
                 Escribir "¡Acertaste la paridad! Ganaste $", monto;
-                listaSaldos[idSesion] <- listaSaldos[idSesion] + (monto*2); //Saldo negativo.
-				listaSaldos[0] <- listaSaldos[0] - monto; //Saldo positivo.
-				listaGananciaAdmin[idSesion] <- listaGananciaAdmin[idSesion] - monto;
+                listaSaldos[idSesion] <- listaSaldos[idSesion] + (monto * 2); //Saldo negativo.
+				listaSaldos[0] <- listaSaldos[0] - (monto * 2); //Saldo positivo.
+				listaGananciaAdmin[idSesion] <- listaGananciaAdmin[idSesion] - (monto * 2);
             Sino
                 Escribir "Paridad incorrecta (o salio el 0). Perdiste $", monto;
             FinSi
@@ -1083,31 +1101,34 @@ SubProceso ResolverRonda(tipo, monto, colores, listaSaldos Por Referencia, lista
             Si (numeroSalio <> 0) Y (((rangoElegido = 1) Y (numeroSalio >= 1 Y numeroSalio <= 18)) O ((rangoElegido = 2) Y (numeroSalio >= 19 Y numeroSalio <= 36))) Entonces
                 Escribir "¡Acertaste el rango! Ganaste $", monto;
                 listaSaldos[idSesion] <- listaSaldos[idSesion] + (monto*2); //Saldo negativo.
-				listaSaldos[0] <- listaSaldos[0] - monto; //Saldo positivo.
-				listaGananciaAdmin[idSesion] <- listaGananciaAdmin[idSesion] - monto;
+				listaSaldos[0] <- listaSaldos[0] - (monto*2); //Saldo positivo.
+				listaGananciaAdmin[idSesion] <- listaGananciaAdmin[idSesion] - (monto*2);
             Sino
                 Escribir "Rango incorrecto (o salio el 0). Perdiste $", monto;
-				listaSaldos[idSesion] <- listaSaldos[idSesion] - monto; // EGRESO
-				listaSaldos[0]<- listaSaldos[0] + monto; //INGRESO
+				// No se resta saldo aca para no generar un doble cobro
             FinSi		
 		5:
+			// Se acredita (monto * 3) para devolver la apuesta inicial (1) + ganancia (2).
             Si (numeroSalio <> 0) Y ( ((docenaElegida = 1) Y (numeroSalio >= 1 Y numeroSalio <= 12)) O ((docenaElegida = 2) Y (numeroSalio >= 13 Y numeroSalio <= 24)) O ((docenaElegida = 3) Y (numeroSalio >= 25 Y numeroSalio <= 36)) ) Entonces
                 Escribir "¡Acertaste la docena! Ganaste $", (monto * 2);
-                listaSaldos[idSesion] <- listaSaldos[idSesion] + (monto * 2);
-				listaSaldos[0]<- listaSaldos[0] - monto;
-				listaGananciaAdmin[idSesion] <- listaGananciaAdmin[idSesion] - monto;
+                listaSaldos[idSesion] <- listaSaldos[idSesion] + (monto * 3); // Docena paga 2 a 1 (apuesta + 2x monto)
+				listaSaldos[0]<- listaSaldos[0] - (monto * 3);
+				listaGananciaAdmin[idSesion] <- listaGananciaAdmin[idSesion] - (monto * 3);
             Sino
-                Escribir "Docena incorrecta (o salio el 0). Perdiste $", monto;
-                listaSaldos[idSesion] <- listaSaldos[idSesion] - monto; // EGRESO
-				listaSaldos[0]<- listaSaldos[0] + monto; //INGRESO       
+                Escribir "Docena incorrecta (o salio el 0). Perdiste $", monto;    
+				// No se resta saldo aca para no generar un doble cobro
             FinSi
     FinSegun
 FinSubProceso
 
+// Pregunta al usuario si desea continuar jugando otra ronda
+// Valida estrictamente las opciones 'S' o 'N'
 Funcion continua = DeseaContinuar(saldoActual)
     Definir continua Como Caracter;
 	
-	Si saldoActual > 0 Entonces
+	continua <- "N"; // Valor por defecto ante falta de fondos
+	
+	Si saldoActual >= 500 Entonces
         Escribir "";
         // Validación robusta: No saldrá de aca hasta que escriba S, s, N o n
         Repetir
@@ -1131,17 +1152,21 @@ SubProceso Ruleta_Laboratorio (listaSaldos Por Referencia, listaGananciaAdmin Po
     Definir seguir Como Caracter;
 	Definir monto como Real;
     
+	// Inicializacion de mesa
     CargarColores(colores);
     MostrarBienvenida();
     
     seguir = "S";
     
-    Mientras (listaSaldos[idSesion] > 0) Y (Mayusculas(seguir) = "S") Hacer
+	// El bucle corre mientras el jugador tenga el mínimo de $500 y confirme querer seguir
+    Mientras (listaSaldos[idSesion] >= 500) Y (Mayusculas(seguir) = "S") Hacer
 		monto = SolicitarApuesta(listaSaldos[idSesion]);
 		DibujarPanoRuleta();
 		tipo = MenuApuestas();
 		ResolverRonda(tipo, monto, colores, listaSaldos, listaGananciaAdmin, idSesion);
-		seguir = DeseaContinuar(saldo);
+		
+		// Se le pasa el saldo real del vector para no evaluar una variable inexistente
+		seguir = DeseaContinuar(listaSaldos[idSesion]);
 	FinMientras
 
     
