@@ -843,8 +843,8 @@ SubProceso AnimarGiroRuleta(numeroSalio, colorSalio)
 FinSubProceso
 
 // Solicita y valida el importe de apuesta asegurando que cumpla el mínimo y no exceda el saldo
-Funcion monto = SolicitarApuesta(saldoActual)
-	Definir monto Como Real;
+Funcion montoIngresado <- SolicitarApuesta(saldoActual)
+	Definir montoIngresado Como Real;
 	Definir opcionTexto como cadena;
 	Definir montoMinimo Como Real;
 		
@@ -861,33 +861,33 @@ Funcion monto = SolicitarApuesta(saldoActual)
 		opcionTexto <- ReemplazarComaPorPunto(opcionTexto);
 			
 		Si EsValido(opcionTexto) = Verdadero Entonces
-			monto <- ConvertirANumero(opcionTexto);
+			montoIngresado <- ConvertirANumero(opcionTexto);
 		SiNo
-			monto <- 0; // Ante texto o simbolos invalidos, asigna 0 para fallar validacion
+			montoIngresado <- 0; // Ante texto o simbolos invalidos, asigna 0 para fallar validacion
 		FinSi
 			
 		Limpiar Pantalla;
 		
 		// --- Validacion de limites de saldo ---
-		Si monto <= 0 Entonces
+		Si montoIngresado <= 0 Entonces
 			Escribir "Error: El monto debe ser un número válido mayor a 0.";
 		SiNo
-			Si monto < montoMinimo Entonces
+			Si montoIngresado < montoMinimo Entonces
 				Escribir "Error: El monto mínimo para apostar es de $", montoMinimo, ".";
 			FinSi
 				
-			Si monto > saldoActual Entonces
+			Si montoIngresado > saldoActual Entonces
 				Escribir "Error: Saldo insuficiente. Tu saldo actual es de $", saldoActual, ".";
 			FinSi
 		FinSi
 			
 		// El bucle se repite hasta que el monto sea válido, mayor o igual al mínimo y menor o igual al saldo
-		Hasta Que monto >= montoMinimo Y monto <= saldoActual
+		Hasta Que montoIngresado >= montoMinimo Y montoIngresado <= saldoActual
 FinFuncion
 
 // Muestra las opciones de jugadas disponibles
-Funcion tipo = MenuApuestas
-    Definir tipo Como Entero;
+Funcion opcionTipo <- MenuApuestas
+    Definir opcionTipo Como Entero;
 	Definir opcionTexto como cadena;
     Repetir
         Escribir "";
@@ -904,20 +904,20 @@ Funcion tipo = MenuApuestas
 		opcionTexto <- ReemplazarComaPorPunto(opcionTexto);
 		
 		Si EsValido(opcionTexto) = Verdadero Entonces
-		    tipo <- trunc(ConvertirANumero(opcionTexto)); //lo truncamos para tener un valor entero
+		    opcionTipo <- trunc(ConvertirANumero(opcionTexto)); //lo truncamos para tener un valor entero
 		SiNo
-			tipo <- 0; // Si escribieron letras, asigna 0 para que caiga en 'De Otro Modo'
+			opcionTipo <- 0; // Si escribieron letras, asigna 0 para que caiga en 'De Otro Modo'
 		FinSi
 		
-        Si tipo < 1 O tipo > 5 Entonces
+        Si opcionTipo < 1 O tipo > 5 Entonces
             Escribir "Opcion invalida... Reintente";
         FinSi
-    Mientras Que tipo < 1 O tipo > 5
+    Mientras Que opcionTipo < 1 O opcionTipo > 5
 FinFuncion
 
 // Permite seleccionar un numero exacto
-Funcion num = PedirNumeroPleno
-    Definir num Como Entero;
+Funcion numElegido <- PedirNumeroPleno
+    Definir numElegido Como Entero;
 	Definir opcionTexto como cadena;
 	
     Repetir
@@ -928,35 +928,35 @@ Funcion num = PedirNumeroPleno
 		opcionTexto <- ReemplazarComaPorPunto(opcionTexto);
 		
 		Si EsValido(opcionTexto) = Verdadero Entonces
-		    num <- trunc(ConvertirANumero(opcionTexto)); //lo truncamos para obtener un valor entero
+		    numElegido <- trunc(ConvertirANumero(opcionTexto)); //lo truncamos para obtener un valor entero
 		SiNo
-			num <- -1; // -1 fuerza la entrada al bloque de error si se escribieron letras
+			numElegido <- -1; // -1 fuerza la entrada al bloque de error si se escribieron letras
 		FinSi
 		
 		
-		Si num < 0 o num > 36 Entonces
+		Si numElegido < 0 o numElegido > 36 Entonces
 			Escribir "Error: Numero fuera de rango (0 al 36)";
 		FinSi
 		
-    Mientras Que num < 0  o num > 36 
+    Mientras Que numElegido < 0  o numElegido > 36 
 FinFuncion
 
 // Pide la selección entre Rojo o Negro
-Funcion col = PedirColor
-    Definir col Como Caracter;
+Funcion colorElegido <- PedirColor
+    Definir colorElegido Como Caracter;
     Repetir
         Escribir "Elija color (R: Rojo / N: Negro):";
-        Leer col;
-        col = Mayusculas(col);
-        Si col <> "R" Y col <> "N" Entonces
+        Leer colorElegido;
+        colorElegido = Mayusculas(colorElegido);
+        Si colorElegido <> "R" Y colorElegido <> "N" Entonces
             Escribir "Error: Ingrese solo R o N";
         FinSi
-    Mientras Que col <> "R" Y col <> "N"
+    Mientras Que colorElegido <> "R" Y colorElegido <> "N"
 FinFuncion
 
 // Pide Par (1) o Impar (2)
-Funcion paridad = PedirParidad
-    Definir paridad Como Entero;
+Funcion paridadElegida <- PedirParidad
+    Definir paridadElegida Como Entero;
 	Definir opcionTexto como cadena;
 	
     Repetir
@@ -967,20 +967,20 @@ Funcion paridad = PedirParidad
 		opcionTexto <- ReemplazarComaPorPunto(opcionTexto);
 		
 		Si EsValido(opcionTexto) = Verdadero Entonces
-		    paridad <- ConvertirANumero(opcionTexto);
+		    paridadElegida <- ConvertirANumero(opcionTexto);
 		SiNo
-			paridad <- 0; // Si escribieron letras, asigna 0 para que caiga en 'De Otro Modo'
+			paridadElegida <- 0; // Si escribieron letras, asigna 0 para que caiga en 'De Otro Modo'
 		FinSi
 		
-        Si paridad <> 1 Y paridad <> 2 Entonces
+        Si paridadElegida <> 1 Y paridadElegida <> 2 Entonces
             Escribir "Error: Ingrese 1 para Par o 2 para Impar";
         FinSi
-    Mientras Que paridad <> 1 Y paridad <> 2
+    Mientras Que paridadElegida <> 1 Y paridadElegida <> 2
 FinFuncion
 
 // Pide Falta (1 al 18) o Pasa (19 al 36)
-Funcion rango = PedirFaltaPasa
-    Definir rango Como Entero;
+Funcion rangoElegido <- PedirFaltaPasa
+    Definir rangoElegido Como Entero;
 	Definir opcionTexto como cadena;
     Repetir
         Escribir "Elija rango (1: Falta [1-18] / 2: Pasa [19-36]):";
@@ -990,20 +990,20 @@ Funcion rango = PedirFaltaPasa
 		opcionTexto <- ReemplazarComaPorPunto(opcionTexto);
 		
 		Si EsValido(opcionTexto) = Verdadero Entonces
-		    rango <- trunc(ConvertirANumero(opcionTexto)); //truncamos para obtener un valor entero 
+		    rangoElegido <- trunc(ConvertirANumero(opcionTexto)); //truncamos para obtener un valor entero 
 		SiNo
-			rango <- 0; // Si escribieron letras, asigna 0 para que caiga en 'De Otro Modo'
+			rangoElegido <- 0; // Si escribieron letras, asigna 0 para que caiga en 'De Otro Modo'
 		FinSi
 		
-        Si rango <> 1 Y rango <> 2 Entonces
+        Si rangoElegido <> 1 Y rangoElegido <> 2 Entonces
             Escribir "Error: Ingrese 1 para Falta o 2 para Pasa";
         FinSi
-    Mientras Que rango <> 1 Y rango <> 2
+    Mientras Que rangoElegido <> 1 Y rangoElegido <> 2
 FinFuncion
 
 // Pide Primera (1-12), Segunda (13-24) o Tercera Docena (25-36)
-Funcion docena = PedirDocena
-	Definir docena Como Entero;
+Funcion docenaElegida <- PedirDocena
+	Definir docenaElegida Como Entero;
 	Definir opcionTexto como cadena;
 	Repetir
 		Escribir "Elija la docena:";
@@ -1013,21 +1013,21 @@ Funcion docena = PedirDocena
         Leer opcionTexto;
 		
 		Si EsValido(opcionTexto) = Verdadero Entonces
-		    docena <- ConvertirANumero(opcionTexto);
+		    docenaElegida <- ConvertirANumero(opcionTexto);
 		SiNo
-			docena <- 0; // Si escribieron letras, asigna 0 para que caiga en 'De Otro Modo'
+			docenaElegida <- 0; // Si escribieron letras, asigna 0 para que caiga en 'De Otro Modo'
 		FinSi
 		
-        Si docena < 1 O docena > 3 Entonces
+        Si docenaElegida < 1 O docenaElegida > 3 Entonces
             Escribir "Error: Ingrese una opcion valida (1, 2 o 3).";
         FinSi
-	Mientras Que docena < 1 O docena > 3
+	Mientras Que docenaElegida < 1 O docenaElegida > 3
 FinFuncion
 
 // Genera un número aleatorio entre 0 y 36
-Funcion num = TirarRuleta
-    Definir num Como Entero;
-    num = Azar(37);
+Funcion numAleatorio <- TirarRuleta
+    Definir numAleatorio Como Entero;
+    numAleatorio <- Azar(37);
 FinFuncion
 
 // Procesa la tirada, compara las condiciones de victoria y ajusta los saldos
@@ -1038,15 +1038,15 @@ SubProceso ResolverRonda(tipo, monto, colores, listaSaldos Por Referencia, lista
 	// 1. Entrada de datos segun el tipo de jugada
     Segun tipo Hacer
         1:
-            numElegido = PedirNumeroPleno();
+            numElegido <- PedirNumeroPleno;
         2:
-            colElegido = PedirColor();
+            colElegido <- PedirColor;
         3:
-            paridadElegida = PedirParidad();
+            paridadElegida <- PedirParidad;
 		4: 
-			rangoElegido = PedirFaltaPasa();
+			rangoElegido <- PedirFaltaPasa;
 		5:
-			docenaElegida = PedirDocena();
+			docenaElegida <- PedirDocena;
     FinSegun
     
 	// 2. COBRO PREVENTIVO: Al girar, la apuesta ingresa al capital y reporte del admin
@@ -1056,8 +1056,8 @@ SubProceso ResolverRonda(tipo, monto, colores, listaSaldos Por Referencia, lista
 	listaGananciaAdmin[idSesion] <- listaGananciaAdmin[idSesion] + monto;
 	
 	// 3. Giro de la rueda y se obtiene los resultados
-    numeroSalio = TirarRuleta();
-    colSalio = colores[numeroSalio];
+    numeroSalio <- TirarRuleta();
+    colSalio <- colores[numeroSalio];
 	AnimarGiroRuleta(numeroSalio, colSalio);
     
 	// 4. Liquidacion economica segun tipo de apuesta
@@ -1123,25 +1123,25 @@ FinSubProceso
 
 // Pregunta al usuario si desea continuar jugando otra ronda
 // Valida estrictamente las opciones 'S' o 'N'
-Funcion continua = DeseaContinuar(saldoActual)
-    Definir continua Como Caracter;
+Funcion quiereContinuar <- DeseaContinuar(saldoActual)
+    Definir quiereContinuar Como Caracter;
 	
-	continua <- "N"; // Valor por defecto ante falta de fondos
+	quiereContinuar <- "N"; // Valor por defecto ante falta de fondos
 	
 	Si saldoActual >= 500 Entonces
         Escribir "";
         // Validación robusta: No saldrá de aca hasta que escriba S, s, N o n
         Repetir
             Escribir "¿Desea jugar otra ronda en la Ruleta? (S/N):";
-            Leer continua;
-            continua = Mayusculas(continua); // Lo pasamos a mayúscula para evaluar fácil
+            Leer quiereContinuar;
+            quiereContinuar <- Mayusculas(quiereContinuar); // Lo pasamos a mayúscula para evaluar fácil
             
 			Limpiar Pantalla;
-            Si (continua <> "S") Y (continua <> "N") Entonces
+            Si (quiereContinuar <> "S") Y (quiereContinuar <> "N") Entonces
                 Escribir "Error: Ingrese únicamente S para Sí o N para No.";
                 Escribir "";
             FinSi
-        Hasta Que continua = "S" O continua = "N"
+        Hasta Que quiereContinuar = "S" O quiereContinuar = "N"
     FinSi
 FinFuncion
 
@@ -1156,17 +1156,17 @@ SubProceso Ruleta_Laboratorio (listaSaldos Por Referencia, listaGananciaAdmin Po
     CargarColores(colores);
     MostrarBienvenida();
     
-    seguir = "S";
+    seguir <- "S";
     
 	// El bucle corre mientras el jugador tenga el mínimo de $500 y confirme querer seguir
     Mientras (listaSaldos[idSesion] >= 500) Y (Mayusculas(seguir) = "S") Hacer
-		monto = SolicitarApuesta(listaSaldos[idSesion]);
+		monto <- SolicitarApuesta(listaSaldos[idSesion]);
 		DibujarPanoRuleta();
-		tipo = MenuApuestas();
+		tipo <- MenuApuestas();
 		ResolverRonda(tipo, monto, colores, listaSaldos, listaGananciaAdmin, idSesion);
 		
 		// Se le pasa el saldo real del vector para no evaluar una variable inexistente
-		seguir = DeseaContinuar(listaSaldos[idSesion]);
+		seguir <- DeseaContinuar(listaSaldos[idSesion]);
 	FinMientras
 
     
