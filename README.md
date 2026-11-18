@@ -15,7 +15,7 @@ Proyecto final desarrollado en pseudocódigo (**PSeInt**) que simula un casino v
 
 Para ejecutar la versión final se utiliza únicamente el archivo correspondiente al commit **"Proyecto final, con todas las correcciones."** :
 
-* `CASINO_gano.psc`
+* `CASI_NO_GANO.psc`
 
 > **Nota:** Los demás archivos `.psc` y carpetas del repositorio corresponden a versiones anteriores, pruebas de desarrollo o módulos independientes de cada juego, por lo que no deben ejecutarse.
 
