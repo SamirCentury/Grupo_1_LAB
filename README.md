@@ -13,15 +13,15 @@ Proyecto final desarrollado en pseudocódigo (**PSeInt**) que simula un casino v
 
 ## Archivo del proyecto final
 
-Para ejecutar la versión final se utiliza únicamente el archivo correspondiente al commit **"Proyecto final, con todas las correcciones."** :
+Para ejecutar la versión final se utiliza únicamente el archivo correspondiente al commit **"Correcciones terminadas"** :
 
-* `CASI_NO_GANO.psc`
+* `CASINO_PROYECTO_LABORATORIO.psc`
 
 > **Nota:** Los demás archivos `.psc` y carpetas del repositorio corresponden a versiones anteriores, pruebas de desarrollo o módulos independientes de cada juego, por lo que no deben ejecutarse.
 
 ## Instrucciones de ejecución
 
-1. Descarga el archivo `CASINO_gano.psc` desde este repositorio.
+1. Descarga el archivo `CASINO_PROYECTO_LABORATORIO.psc` desde este repositorio.
 2. Abre el programa **PSeInt**.
-3. Ve a **Archivo > Abrir** y selecciona `CASINO_gano.psc`.
+3. Ve a **Archivo > Abrir** (o presiona `Ctrl + O`) y selecciona `CASINO_PROYECTO_LABORATORIO.psc`.
 4. Haz clic en el botón **Ejecutar** (ícono verde de reproducción o presiona `F9`).
