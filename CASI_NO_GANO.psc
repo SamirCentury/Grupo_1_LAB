@@ -1,3 +1,5 @@
+//https://github.com/SamirCentury/Grupo_1_LAB.git
+
 Algoritmo Casino_Virtual_Optimizado
 	//========================================================
 	//1. CONFIGURACION E INICIALIZACION DE DATOS
